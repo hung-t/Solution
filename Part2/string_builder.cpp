@@ -34,7 +34,8 @@ void string_builder::append_char(char append_char, int pos)
     }
     if (length + 1 >= cap)
     {
-        char *temp = new char[length + 1];
+        cap = length + 2;
+        char *temp = new char[cap];
         for (int i = 0; i < length; i++)
         {
             temp[i] = current_string[i];
@@ -45,7 +46,6 @@ void string_builder::append_char(char append_char, int pos)
         }
         temp[pos] = append_char;
         temp[length + 1] = '\0';
-        cap++;
         delete current_string;
         current_string = temp;
     }
