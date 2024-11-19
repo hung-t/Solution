@@ -6,10 +6,10 @@ class string_builder
 private:
     char *current_string;
     int cap;
-
-public:
     void remove_char(int pos);
     void append_char(char append_char, int pos);
+
+public:
     string_builder();
     string_builder(std::string string);
     int capacity();
