@@ -1,15 +1,19 @@
 #pragma once
+#include <iostream>
 
 class string_builder
 {
 private:
-    std::string current_string;
+    char *current_string;
+    int cap;
 
 public:
+    void remove_char(int pos);
+    void append_char(char append_char, int pos);
     string_builder();
     string_builder(std::string string);
-    size_t capacity();
-    size_t size();
+    int capacity();
+    int size();
     void trim_white_space();
     void remove_extra_whitespace();
     void to_upper_case();

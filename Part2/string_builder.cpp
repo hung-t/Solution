@@ -1,54 +1,128 @@
 #pragma once
 #include <iostream>
+#include <string.h>
 #include <stdexcept>
 #include "string_builder.hpp"
+void string_builder::remove_char(int pos)
+{
+    if (pos < 0)
+    {
+        throw std::out_of_range("pos must be more than or equal to 0");
+    }
+    if (pos >= strlen(current_string))
+    {
+        throw std::out_of_range("pos must be less than string size");
+    }
+    int i = pos;
+    for (; current_string[i + 1] != '\0'; i++)
+    {
+        current_string[i] = current_string[i + 1];
+    }
+    current_string[i] = '\0';
+}
+
+void string_builder::append_char(char append_char, int pos)
+{
+    size_t length = size();
+    if (pos < 0)
+    {
+        throw std::out_of_range("pos must be more than or equal to 0");
+    }
+    if (pos > length)
+    {
+        throw std::out_of_range("pos must be less than or equal to string size");
+    }
+    if (size() == cap)
+    {
+        char *temp = new char[length + 1];
+        for (int i = 0; i < length; i++)
+        {
+            temp[i] = current_string[i];
+        }
+        for (int i = length; i > pos; i--)
+        {
+            temp[i] = current_string[i - 1];
+        }
+        temp[pos] = append_char;
+        temp[length + 1] = '\0';
+        cap++;
+        delete current_string;
+        current_string = temp;
+    }
+    else
+    {
+        for (int i = length; i > pos; i--)
+        {
+            current_string[i] = current_string[i - 1];
+        }
+        current_string[pos] = append_char;
+        current_string[length + 1] = '\0';
+    }
+}
 
 string_builder::string_builder()
 {
-    current_string = "";
+    current_string = new char[1];
+    current_string[0] = '\0';
+    cap = 1;
 }
 
 string_builder::string_builder(std::string string)
 {
-    current_string = string;
+    cap = string.size();
+    current_string = new char[string.size()];
+    strcpy(current_string, string.c_str());
 }
 
-size_t string_builder::capacity()
+int string_builder::capacity()
 {
-    return current_string.capacity();
+    return cap;
 }
 
-size_t string_builder::size()
+int string_builder::size()
 {
-    return current_string.size();
+    int length = 0;
+    while (current_string[length] != '\0')
+    {
+        length++;
+    }
+    return length;
 }
 
 void string_builder::trim_white_space()
 {
-    for (int i = current_string.size() - 1; i >= 0 && current_string[i] == ' '; i--)
+    int left_i = 0, right_i = size() - 1;
+    for (; current_string[left_i] != '\0' && current_string[left_i] == ' '; left_i++)
     {
-        current_string.pop_back();
     }
-    while (current_string[0] == ' ')
+    for (; current_string[right_i] != '\0' && current_string[right_i] == ' '; right_i--)
     {
-        current_string.erase(0, 1);
     }
+    for (int i = left_i; i <= right_i; i++)
+    {
+        current_string[i - left_i] = current_string[i];
+    }
+    current_string[right_i - left_i + 1] = '\0';
 }
 
 void string_builder::remove_extra_whitespace()
 {
+    int left_i = 0, right_i = strlen(current_string) - 1;
     int count_white_space_left = 0, count_white_space_right = 0;
-    for (int i = current_string.size() - 1; i >= 0 && current_string[i] == ' '; i--)
+    for (; current_string[left_i] != '\0' && current_string[left_i] == ' '; left_i++)
     {
-        current_string.pop_back();
-        count_white_space_right++;
-    }
-    while (current_string[0] == ' ')
-    {
-        current_string.erase(0, 1);
         count_white_space_left++;
     }
-    for (int i = 0, j; i < current_string.size() - 1; i++)
+    for (; current_string[right_i] != '\0' && current_string[right_i] == ' '; right_i--)
+    {
+        count_white_space_right++;
+    }
+    for (int i = left_i; i <= right_i; i++)
+    {
+        current_string[i - left_i] = current_string[i];
+    }
+    current_string[right_i - left_i + 1] = '\0';
+    for (int i = 0, j; i < ((int)size()) - 1; i++)
     {
         if (current_string[i] == ' ')
         {
@@ -56,7 +130,7 @@ void string_builder::remove_extra_whitespace()
             {
                 for (j = i + 1; current_string[j] == ' ';)
                 {
-                    current_string.erase(j, 1);
+                    remove_char(j);
                 }
                 i = j;
             }
@@ -64,17 +138,17 @@ void string_builder::remove_extra_whitespace()
     }
     for (; count_white_space_left > 0; count_white_space_left--)
     {
-        current_string.insert(current_string.begin(), ' ');
+        append_char(' ', 0);
     }
     for (; count_white_space_right > 0; count_white_space_right--)
     {
-        current_string.push_back(' ');
+        append_char(' ', size());
     }
 }
 
 void string_builder::to_upper_case()
 {
-    for (int i = 0; i < current_string.size(); i++)
+    for (int i = 0; current_string[i] != '\0'; i++)
     {
         if (current_string[i] >= 'a' && current_string[i] <= 'z')
             current_string[i] -= 32;
@@ -83,7 +157,7 @@ void string_builder::to_upper_case()
 
 void string_builder::to_lower_case()
 {
-    for (int i = 0; i < current_string.size(); i++)
+    for (int i = 0; current_string[i] != '\0'; i++)
     {
         if (current_string[i] >= 'A' && current_string[i] <= 'Z')
             current_string[i] += 32;
@@ -92,28 +166,39 @@ void string_builder::to_lower_case()
 
 void string_builder::append(std::string append_string, int pos)
 {
+    int cstring_initial_length = size();
     if (pos < 0)
     {
         throw std::out_of_range("pos must be more than or equal to 0");
     }
-    if (pos > current_string.size())
+    if (pos > size())
     {
         throw std::out_of_range("pos must be less than or equal to string size");
     }
-    current_string.insert(pos, append_string);
+    int append_initial_string_length = append_string.size();
+    for (int i = 0; i < append_initial_string_length; i++)
+    {
+        append_char(append_string[i], pos + i);
+    }
+    current_string[cstring_initial_length + append_initial_string_length] = '\0';
 }
 
 void string_builder::extract_right_string(int size)
 {
+    size_t length = this->size();
     if (size < 0)
     {
         throw std::out_of_range("size must be more than or equal to 0");
     }
-    if (size > current_string.size())
+    if (size > length)
     {
         throw std::out_of_range("size must be less than or equal to string size");
     }
-    current_string = current_string.substr(current_string.size() - size, size);
+    for (int i = 0; i < size; i++)
+    {
+        current_string[i] = current_string[length - size + i];
+    }
+    current_string[size] = '\0';
 }
 
 void string_builder::extract_left_string(int size)
@@ -122,20 +207,21 @@ void string_builder::extract_left_string(int size)
     {
         throw std::out_of_range("size must be more than or equal to 0");
     }
-    if (size > current_string.size())
+    if (size > this->size())
     {
         throw std::out_of_range("size must be less than or equal to string size");
     }
-    current_string = current_string.substr(0, size);
+    current_string[size] = '\0';
 }
 
 void string_builder::extract_string(int pos, int size)
 {
+    int length = this->size();
     if (pos < 0)
     {
         throw std::out_of_range("pos must be more than or equal to 0");
     }
-    if (pos > current_string.size())
+    if (pos > length)
     {
         throw std::out_of_range("pos must be less than or equal to string size");
     }
@@ -143,21 +229,29 @@ void string_builder::extract_string(int pos, int size)
     {
         throw std::out_of_range("size must be more than or equal to 0");
     }
-    if (size > current_string.size())
+    if (size > length)
     {
         throw std::out_of_range("size must be less than or equal to string size");
     }
-    if (pos + size > current_string.size())
+    if (pos + size > length)
     {
         throw std::out_of_range("sum of pos and size must be less than or equal to string size");
     }
-    current_string = current_string.substr(pos, size);
+    for (int i = pos; i < pos + size; i++)
+    {
+        current_string[i - pos] = current_string[i];
+    }
+    current_string[size] = '\0';
 }
 
 void string_builder::input()
 {
+    std::string temp;
     std::cout << "Nhap xau: ";
-    getline(std::cin, current_string);
+    getline(std::cin, temp);
+    cap = temp.size();
+    current_string = new char[temp.size()];
+    strcpy(current_string, temp.c_str());
 }
 
 void string_builder::output()
@@ -167,5 +261,10 @@ void string_builder::output()
 
 std::string string_builder::to_string()
 {
-    return current_string;
+    std::string temp;
+    for (int i = 0; current_string[i] != '\0'; i++)
+    {
+        temp.push_back(current_string[i]);
+    }
+    return temp;
 }
