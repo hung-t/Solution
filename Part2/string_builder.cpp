@@ -32,7 +32,7 @@ void string_builder::append_char(char append_char, int pos)
     {
         throw std::out_of_range("pos must be less than or equal to string size");
     }
-    if (size() == cap)
+    if (length + 1 >= cap)
     {
         char *temp = new char[length + 1];
         for (int i = 0; i < length; i++)
@@ -69,9 +69,13 @@ string_builder::string_builder()
 
 string_builder::string_builder(std::string string)
 {
-    cap = string.size();
-    current_string = new char[string.size()];
-    strcpy(current_string, string.c_str());
+    cap = string.size() + 1;
+    current_string = new char[cap];
+    for (int i = 0; string[i] != '\0' && i < cap - 1; i++)
+    {
+        current_string[i] = string[i];
+    }
+    current_string[cap - 1] = '\0';
 }
 
 int string_builder::capacity()
@@ -249,9 +253,13 @@ void string_builder::input()
     std::string temp;
     std::cout << "Nhap xau: ";
     getline(std::cin, temp);
-    cap = temp.size();
-    current_string = new char[temp.size()];
-    strcpy(current_string, temp.c_str());
+    cap = temp.size() + 1;
+    current_string = new char[cap];
+    for (int i = 0; temp[i] != '\0' || i < cap - 1; i++)
+    {
+        current_string[i] = temp[i];
+    }
+    current_string[cap - 1] = '\0';
 }
 
 void string_builder::output()
