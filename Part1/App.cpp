@@ -30,7 +30,7 @@ void App::Main()
     std::cout << "* 4. Xoa sinh vien                                         *" << std::endl;
     std::cout << "* 5. Sua sinh vien                                         *" << std::endl;
     std::cout << "* 6. Sap xep va xuat thong tin sinh vien                   *" << std::endl;
-    std::cout << "* 7. Cau hinh co so du lieu                                *" << std::endl;
+    std::cout << "* 7. Doc va ghi file                                       *" << std::endl;
     std::cout << "*                                                          *" << std::endl;
     std::cout << "************************************************************" << std::endl;
     switch (_getch())
@@ -60,7 +60,7 @@ void App::Main()
         Main();
         break;
     case '7':
-        _studentManagement->setConnectionString();
+        _studentManagement->ReadWrite();
         Main();
         break;
     default:

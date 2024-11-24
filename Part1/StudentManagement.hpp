@@ -10,7 +10,7 @@ class StudentManagement
 private:
     std::list<Student> studentList;
     std::vector<Student> studentVector;
-    std::string connectionString;
+    std::string fileDirectory;
     std::string errorMessage;
     bool isValidId(const std::string str);
     bool isValidName(const std::string str);
@@ -19,7 +19,7 @@ private:
 
 public:
     StudentManagement();
-    StudentManagement(const std::string connectionString);
+    StudentManagement(const std::string fileDirectory);
     ~StudentManagement();
     void Search();
     void Modify();
@@ -27,7 +27,7 @@ public:
     void Add();
     void ShowListStudent();
     void ShowSortedStudentList();
-    void setConnectionString();
+    void ReadWrite();
 };
 
 #include "StudentManagement.cpp"

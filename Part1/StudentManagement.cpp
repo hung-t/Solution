@@ -129,15 +129,15 @@ StudentManagement::StudentManagement()
 {
 }
 
-StudentManagement::StudentManagement(const std::string connectionString)
+StudentManagement::StudentManagement(const std::string fileDirectory)
 {
-    this->connectionString = connectionString;
+    this->fileDirectory = fileDirectory;
     std::string readString;
     unsigned long long id;
     std::string name;
     int age;
     double point;
-    std::ifstream file(connectionString, std::ifstream::in);
+    std::ifstream file(fileDirectory, std::ifstream::in);
     if (!file.is_open())
     {
         std::cout << "Bam phim bat ky de tiep tuc";
@@ -170,7 +170,7 @@ StudentManagement::StudentManagement(const std::string connectionString)
 
 StudentManagement::~StudentManagement()
 {
-    std::ofstream file(connectionString, std::ofstream::out | std::ofstream::trunc);
+    std::ofstream file(fileDirectory, std::ofstream::out | std::ofstream::trunc);
     for (auto &student : studentList)
     {
         file << student.GetId() << "\n"
@@ -676,7 +676,7 @@ void StudentManagement::ShowSortedStudentList()
     _getch();
 }
 
-void StudentManagement::setConnectionString()
+void StudentManagement::ReadWrite()
 {
     system("cls");
     std::string readString;
@@ -700,7 +700,7 @@ void StudentManagement::setConnectionString()
         file.open(readString);
     }
     // Output
-    std::ofstream oFile(connectionString, std::ofstream::out | std::ofstream::trunc);
+    std::ofstream oFile(fileDirectory, std::ofstream::out | std::ofstream::trunc);
     for (auto &student : studentList)
     {
         oFile << student.GetId() << "\n"
@@ -719,7 +719,7 @@ void StudentManagement::setConnectionString()
     studentVector.clear();
     studentList.clear();
     // Input
-    this->connectionString = readString;
+    this->fileDirectory = readString;
     std::stringstream buffer;
     buffer << file.rdbuf();
     while (getline(buffer, readString, '\n'))
