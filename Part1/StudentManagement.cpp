@@ -97,7 +97,7 @@ bool StudentManagement::isValidPoint(const std::string str)
     }
     if (str.size() >= 6)
     {
-        errorMessage = "Diem qua lon. Diem chi nam trong gia tri tu 0 den 10";
+        errorMessage = "Diem co do dai qua lon. Diem chi nam trong gia tri tu 0 den 10";
         return false;
     }
     for (char c : str)

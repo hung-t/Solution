@@ -2,7 +2,7 @@
 #include "Student.hpp"
 #include "App.cpp"
 #include "StudentManagement.hpp"
-
+using namespace std;
 int main()
 {
     try
